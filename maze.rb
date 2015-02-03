@@ -27,8 +27,12 @@ class Maze
     puts @maze
   end
 
-  def solve(begX,begY,endX,endY,trace=false)
 
+
+  def solve(begX,begY,endX,endY,trace=false)
+    if @maze[begY][begX]=='1'
+      return false
+    end
     moves_completed = Hash.new(false)
     moves_queue = Queue.new
     moves_queue << Move.new(begX,begY,nil)
@@ -36,6 +40,9 @@ class Maze
     until moves_queue.empty?
       move = moves_queue.pop
       if (move.x == endX and move.y == endY)
+        if trace
+          trace_solution move
+        end
         return true
 
       else
@@ -52,6 +59,24 @@ class Maze
     end
     return false
   end
+  def trace_solution(final)
+    steps = [final]
+    step = final
+    until step.prev.nil?
+      step = step.prev
+      steps.push(step)
+    end
+    i=0
+    steps.reverse.each do |step|
+      print "step #{i}: "
+      print [step.x,step.y]
+      print "\n"
+      i+=1
+    end
+  end
+  def trace(begX,begY,finalX,finalY)
+    return solve(begX,begY,finalX,finalY,trace=true)
+  end
 end
 
 
@@ -61,6 +86,7 @@ end
 a = Maze.new
 a.load(5,5,"10101111110000010101")
 a.display
+print "\n"
 #print a.maze
 #print "\n"
-puts a.solve(1,0,3,2)
+a.trace(0,1,3,2)
